@@ -28,17 +28,21 @@
              * * ANLEITUNG FÜR DICH:
              * 1. Erstelle einen Ordner namens "img" im gleichen Verzeichnis wie diese Datei.
              * 2. Speichere deine Bilder dort hinein.
-             * 3. Benenne sie wie unten angegeben (z.B. "logo.PNG", "hero.PNG").
+             * 3. WICHTIG: Achte auf Groß-/Kleinschreibung! "logo.png" ist NICHT gleich "logo.PNG".
              */
 
             /* Dein Logo (Transparentes PNG empfohlen) */
+            /* GEÄNDERT: .png kleingeschrieben */
             --img-logo: url('img/logo.png');
 
             /* Hintergrundbild ganz oben (Hero Section - im Hintergrund) */
             --bg-hero: url('img/hero.PNG');
 
-            /* NEU: Bild rechts in der Hero Section (Restaurant Bild) */
+            /* Bild rechts in der Hero Section (Restaurant Bild) */
             --img-hero-side: url('img/hero-side.PNG');
+
+            /* NEU: Das Foto deiner kompletten Speisekarte */
+            --img-speisekarte: url('img/speisekarte.PNG');
 
             /* Bild im "Über uns" Bereich */
             --img-about: url('img/about.PNG');
@@ -47,7 +51,6 @@
             --img-map: url('img/map.PNG');
             
             /* Pizzen (Quadratische Bilder empfohlen) */
-            /* ANWALT-KOMMENTAR: Dateinamen wie vom Mandanten gewünscht aktualisiert */
             --img-gemuese: url('img/pizza-diavola.PNG'); /* Gemüse Pizza nutzt dieses Bild */
             --img-nutella: url('img/nutella.PNG');        /* Nutella Pizza */
             --img-oliva: url('img/oliva.PNG');            /* Oliven Pizza */
@@ -208,7 +211,12 @@
             /* Größe des Logos anpassen */
             width: 180px; 
             height: 50px;
+            /* WICHTIG: Verhindert, dass das Logo zusammengedrückt wird */
+            flex-shrink: 0;
             
+            /* Debugging: Entferne die Kommentardzeichens, um die Box zu sehen, falls das Bild fehlt */
+            /* border: 1px dashed red; */
+
             /* Lädt das Bild aus der Variable oben */
             background-image: var(--img-logo);
             background-size: contain;
@@ -508,6 +516,19 @@
             color: var(--accent-red) !important;
         }
 
+        /* NEUE KLASSE FÜR SPEISEKARTE */
+        .full-menu-box {
+            width: 100%;
+            /* Da wir nicht wissen, wie lang deine Karte ist, geben wir viel Platz */
+            min-height: 150vh; 
+            background-image: var(--img-speisekarte);
+            background-size: contain; /* Bild wird komplett angezeigt */
+            background-repeat: no-repeat;
+            background-position: top center;
+            background-color: #222;
+            border-radius: var(--border-radius);
+        }
+
         footer {
             background-color: #ffffff;
             padding: 2rem 0;
@@ -621,7 +642,8 @@
                 </div>
                 <ul class="nav-links" id="nav-links">
                     <li><a href="#home">Start</a></li>
-                    <li><a href="#menu">Speisekarte</a></li>
+                    <!-- Link zeigt jetzt auf die neue Speisekarte-Seite -->
+                    <li><a href="#speisekarte">Speisekarte</a></li>
                     <li><a href="#about">Über uns</a></li>
                     <li><a href="#contact">Kontakt</a></li>
                 </ul>
@@ -645,7 +667,8 @@
                         <h1>Leckere Pizza <br>in Weißenthurm</h1>
                         <p>Abholung & Kontaktlose Lieferung. <br>Top Qualität direkt zu dir nach Hause.</p>
                         <div class="hero-buttons">
-                            <a href="#menu" class="btn">Zur Speisekarte</a>
+                            <!-- Link zeigt jetzt auf die neue Speisekarte-Seite -->
+                            <a href="#speisekarte" class="btn">Zur Speisekarte</a>
                             <a href="#contact" class="btn btn-outline">Anrufen & Bestellen</a>
                         </div>
                     </div>
@@ -659,8 +682,9 @@
             </div>
         </section>
 
-        <!-- Menu Section -->
-        <section id="menu">
+        <!-- Favoriten Section (ehemals Menu) -->
+        <!-- ID geändert, damit Navigation nicht verwirrt ist -->
+        <section id="favorites">
             <div class="container">
                 <h2>Unsere Favoriten</h2>
                 <div class="menu-grid">
@@ -795,6 +819,18 @@
         </section>
     </main>
 
+    <!-- WRAPPER: SPEISEKARTE (NEU) -->
+    <div id="view-speisekarte" class="container hidden" style="padding-top: 120px; padding-bottom: 80px; min-height: 100vh;">
+        <h1 style="color: var(--text-main); font-size: 2.5rem; margin-bottom: 2rem; text-align: center;">Unsere Speisekarte</h1>
+        
+        <!-- Container für das Bild (wird oben konfiguriert) -->
+        <div class="full-menu-box"></div>
+
+        <div style="margin-top: 3rem; text-align: center;">
+            <a href="#home" class="btn btn-outline">&larr; Zurück zur Startseite</a>
+        </div>
+    </div>
+
     <!-- WRAPPER: RECHTLICHES (Versteckt per Default) -->
     <div id="view-legal" class="container hidden" style="padding-top: 120px; padding-bottom: 80px; min-height: 60vh;">
         
@@ -867,6 +903,8 @@
         // 3. VIEW TOGGLE LOGIC (Single Page App Behavior)
         const mainView = document.getElementById('view-main');
         const legalView = document.getElementById('view-legal');
+        const menuView = document.getElementById('view-speisekarte');
+        
         const impressumContent = document.getElementById('content-impressum');
         const datenschutzContent = document.getElementById('content-datenschutz');
 
@@ -877,18 +915,19 @@
                 showLegal('impressum');
             } else if (hash === '#datenschutz') {
                 showLegal('datenschutz');
+            } else if (hash === '#speisekarte') {
+                showMenuPage();
             } else {
                 // Default: Main View
-                // Wenn wir von Legal zurückkommen, brauchen wir den Hauptinhalt
                 showMain();
             }
         }
 
         function showLegal(type) {
             mainView.classList.add('hidden');
+            menuView.classList.add('hidden');
             legalView.classList.remove('hidden');
             
-            // Scroll nach oben bei Wechsel zu Legal
             window.scrollTo(0, 0);
 
             if (type === 'impressum') {
@@ -898,18 +937,23 @@
                 impressumContent.classList.add('hidden');
                 datenschutzContent.classList.remove('hidden');
             }
+            navLinks.classList.remove('active');
+        }
+
+        function showMenuPage() {
+            mainView.classList.add('hidden');
+            legalView.classList.add('hidden');
+            menuView.classList.remove('hidden');
             
-            // Menü schließen mobil
+            window.scrollTo(0, 0);
             navLinks.classList.remove('active');
         }
 
         function showMain() {
             legalView.classList.add('hidden');
+            menuView.classList.add('hidden');
             mainView.classList.remove('hidden');
-            impressumContent.classList.add('hidden');
-            datenschutzContent.classList.add('hidden');
             
-            // Menü schließen mobil
             navLinks.classList.remove('active');
         }
 
@@ -920,21 +964,18 @@
         handleHashChange();
 
         // 4. SCROLL POSITION PERSISTENCE (für Hauptseite)
-        // Speichert Scroll-Position nur wenn wir auf der Main View sind
         window.addEventListener('scroll', () => {
-            if (!legalView.classList.contains('hidden')) return; // Nicht speichern auf Legal-Seiten
+            if (!legalView.classList.contains('hidden') || !menuView.classList.contains('hidden')) return;
             sessionStorage.setItem('scrollPos', window.scrollY);
         });
 
         window.addEventListener('load', () => {
-            // Nur wiederherstellen, wenn wir auf der Hauptseite sind (kein Hash oder Hash ist einer der Main-Sections)
             const hash = window.location.hash;
-            const isMainHash = !hash || ['#home', '#menu', '#about', '#contact'].includes(hash);
+            const isMainHash = !hash || ['#home', '#favorites', '#about', '#contact'].includes(hash);
             
             if (isMainHash) {
                 const scrollPos = sessionStorage.getItem('scrollPos');
                 if (scrollPos) {
-                    // Kleiner Timeout hilft manchmal bei Browser-Rendering
                     setTimeout(() => window.scrollTo(0, scrollPos), 0);
                 }
             }
@@ -943,4 +984,3 @@
     </script>
 </body>
 </html>
-
